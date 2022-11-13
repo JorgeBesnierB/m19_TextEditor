@@ -18,12 +18,64 @@ module.exports = () => {
       path: path.resolve(__dirname, 'dist'),
     },
     plugins: [
-      
+      // ###################################################
+      // This webpack plugin is to generate an html file 
+      new HtmlWebpackPlugin({
+        template: './index.html',
+        favicon: "./favicon.ico",
+        title: 'JATE'
+      }),
+
+      // this is our service worker
+      new InjectManifest({
+        swSrc: "./src-sw.js",
+        swDest: "src-sw.js",
+      }),
+
+
+      new WebpackPwaManifest({
+        name: 'TEXT EDITOR',
+        short_name:'JATE',
+        description: 'Just Another Text Editor that works online and offline', 
+        background_color: '#fffff0',
+				theme_color: '#fffff0',
+        start_url: '/',
+        publicPath: '/',
+        fingerprints: false,
+        inject: true,
+        icons: [
+          {
+            src: path.resolve('src/images/logo.png'), 
+            sizes: [96, 128, 192, 256, 384, 512],
+            destination: path.join('assets', 'icons'), 
+          }
+        ], 
+      }),
+      // ###################################################
     ],
 
     module: {
       rules: [
-        
+      // ###################################################
+        {
+          test: /\.css$/,
+          use: ['style-loader', 'css-loader'],
+        },
+        {
+          test: /\.m?js$/,
+          exclude: /node_modules/,
+          use: {
+            loader: 'babel-loader',
+            options: {
+              presets: ['@babel/preset-env'],
+              plugins: [
+                '@babel/plugin-proposal-object-rest-spread',
+                '@babel/transform-runtime',
+              ],
+            },
+          },
+        },
+      // ###################################################
       ],
     },
   };
